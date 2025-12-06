@@ -2,6 +2,59 @@
 #include <cmath>
 #include <iostream>
 
+double bisection(
+    const std::function<double(double)> &f,
+    double a,
+    double b,
+    double x_tol,
+    double f_tol,
+    int n_max,
+    bool verbose = false)
+{
+    double c = (b + a) / 2.0;
+    double err_bound = std::abs(b - a) / 2.0;
+    while (err_bound > x_tol)
+    {
+        if (n_max-- == 0)
+        {
+            break;
+        }
+
+        double fc = f(c);
+        if (verbose)
+        {
+            std::cout << "iter " << (n_max)
+                      << "  a = " << a
+                      << "  b = " << b
+                      << "  c = " << c
+                      << "  f(c) = " << fc
+                      << "  err_bound = " << err_bound << '\n';
+        }
+
+        double fa = f(a);
+        double fb = f(b);
+
+        if (std::abs(fc) <= f_tol)
+        {
+            return c;
+        }
+        else
+        {
+            if (fa * fc < 0)
+            {
+                b = c;
+            }
+            else
+            {
+                a = c;
+            }
+            c = (b + a) / 2.0;
+            err_bound = std::abs(b - a) / 2.0;
+        }
+    }
+    return c;
+}
+
 double newton(
     const std::function<double(double)> &f,
     const std::function<double(double)> &df,
